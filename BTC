@@ -1,0 +1,67 @@
+//@version=4
+strategy("MACD Strategy", overlay=true, pyramiding=1)
+
+//BTC Binance; 1 Day
+
+// MACD Calculation for Long
+fast_length_long = input(25, title="Fast Length for Long")
+slow_length_long = input(50, title="Slow Length for Long")
+signal_length_long = input(20, title="Signal Length for Long")
+
+[macdLine_long, signalLine_long, _] = macd(close, fast_length_long, slow_length_long, signal_length_long)
+
+// MACD Calculation for Short
+fast_length_short = input(65, title="Fast Length for Short")
+slow_length_short = input(130, title="Slow Length for Short")
+signal_length_short = input(50, title="Signal Length for Short")
+
+//original: 8, 24, 7
+
+[macdLine_short, signalLine_short, _] = macd(close, fast_length_short, slow_length_short, signal_length_short)
+
+// Generate trading signals
+long_entry = crossover(macdLine_long, signalLine_long)
+short_entry = crossunder(macdLine_short, signalLine_short)
+
+// Execute trades
+strategy.entry("Buy MACD", strategy.long, when=long_entry)
+strategy.entry("Sell MACD", strategy.short, when=short_entry)
+
+// MACD Calculation for Long Exit
+fast_length_long_exit = input(50, title="Fast Length for Long Exit")
+slow_length_long_exit = input(100, title="Slow Length for Long Exit")
+signal_length_long_exit = input(42, title="Signal Length for Long Exit")
+
+[macdLine_long_exit, signalLine_long_exit, _] = macd(close, fast_length_long_exit, slow_length_long_exit, signal_length_long_exit)
+
+// MACD Calculation for Short Exit
+fast_length_short_exit = input(22, title="Fast Length for Short Exit")
+slow_length_short_exit = input(44, title="Slow Length for Short Exit")
+signal_length_short_exit = input(18, title="Signal Length for Short Exit")
+
+[macdLine_short_exit, signalLine_short_exit, _] = macd(close, fast_length_short_exit, slow_length_short_exit, signal_length_short_exit)
+
+long_exit = crossunder(macdLine_long_exit, signalLine_long_exit)
+short_exit = crossover(macdLine_short_exit, signalLine_short_exit)
+
+// Execute trades
+strategy.entry("Long", strategy.long, when=long_entry)
+strategy.entry("Short", strategy.short, when=short_entry)
+
+// Close trades when exit signal is generated
+strategy.close("Exit long", when=long_exit)
+strategy.close("Buy to cover", when=short_exit)
+
+// Close trades when opposite signal is generated
+strategy.close("Short", when=long_entry)
+strategy.close("Long", when=short_entry)
+
+// Plot MACD
+hline(0, "Zero Line", color=color.gray)
+plot(macdLine_long, title="MACD Line Long", color=color.blue, linewidth=1)
+plot(signalLine_long, title="Signal Line Long", color=color.red, linewidth=1)
+plot(macdLine_long - signalLine_long, title="Histogram Long", color=(macdLine_long >= signalLine_long ? color.green : color.red), style=plot.style_histogram)
+
+plot(macdLine_short, title="MACD Line Short", color=color.blue, linewidth=2)
+plot(signalLine_short, title="Signal Line Short", color=color.red, linewidth=2)
+plot(macdLine_short - signalLine_short, title="Histogram Short", color=(macdLine_short >= signalLine_short ? color.green : color.red), style=plot.style_histogram)
