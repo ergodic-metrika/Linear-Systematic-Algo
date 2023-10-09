@@ -1,0 +1,35 @@
+//@version=4
+//E-mini Nasdaq 100 index futures; 1 Day 
+strategy("MACD Strategy", overlay=true, pyramiding=1)
+
+// MACD Calculation for Long
+fast_length_long = input(23, title="Fast Length for Long")
+slow_length_long = input(48, title="Slow Length for Long")
+signal_length_long = input(17, title="Signal Length for Long")
+
+[macdLine_long, signalLine_long, _] = macd(close, fast_length_long, slow_length_long, signal_length_long)
+
+// Generate trading signals
+long_entry = crossover(macdLine_long, signalLine_long)
+
+// MACD Calculation for Long Exit
+fast_length_long_exit = input(55, title="Fast Length for Long Exit")
+slow_length_long_exit = input(110, title="Slow Length for Long Exit")
+signal_length_long_exit = input(50, title="Signal Length for Long Exit")
+
+[macdLine_long_exit, signalLine_long_exit, _] = macd(close, fast_length_long_exit, slow_length_long_exit, signal_length_long_exit)
+
+// Generate exit signals
+long_exit = crossunder(macdLine_long_exit, signalLine_long_exit)
+
+// Execute trades
+strategy.entry("Long", strategy.long, when=long_entry)
+
+// Close trades when exit signal is generated
+strategy.close("Long", when=long_exit)
+
+// Plot MACD
+hline(0, "Zero Line", color=color.gray)
+plot(macdLine_long, title="MACD Line Long", color=color.blue, linewidth=1)
+plot(signalLine_long, title="Signal Line Long", color=color.red, linewidth=1)
+plot(macdLine_long - signalLine_long, title="Histogram Long", color=(macdLine_long >= signalLine_long ? color.green : color.red), style=plot.style_histogram)
