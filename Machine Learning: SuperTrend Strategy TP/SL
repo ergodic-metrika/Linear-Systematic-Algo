@@ -32,7 +32,7 @@
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@                           @@@@@@@@@@@@@@@@@@@@@@@@
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // © YinYangAlgorithms
-
+//BTC tether 15
 //@version=5
 strategy("Machine Learning: SuperTrend Strategy - Trailing Take Profit and Stop Loss [YinYangAlgorithms]", overlay=true, initial_capital=1000000, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 // ~~~~~~~~~~~~ INPUTS ~~~~~~~~~~~~ //
